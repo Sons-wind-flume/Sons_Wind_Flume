@@ -1,0 +1,10 @@
+* Useful Links
+
+- Phidgets page link to the load cell interface device being used:
+  https://www.phidgets.com/?prodid=1027
+
+- To see the Java API, go here: https://www.phidgets.com/?view=api, and select
+  Java and =1046_0=.
+
+- Lots of examples of Swing GUI code:
+  https://docs.oracle.com/javase/tutorial/uiswing/examples/components/index.html
