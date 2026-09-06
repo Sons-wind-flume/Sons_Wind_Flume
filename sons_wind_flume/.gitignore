@@ -1,0 +1,5 @@
+*.class
+bin/
+*.csv
+.DS_Store
+Thumbs.db
