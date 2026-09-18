@@ -1,17 +1,12 @@
-## Getting Started
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+# jfree-starter
+A minimal Maven-driven Java project for Java 11 or later.  This project is intended to be used as a starting point for small demo applications, and an easy way to get started for developers not yet familiar with Maven.
 
-## Folder Structure
+You should have Apache Maven (version 3.9.9 recommended) installed on your system.
 
-The workspace contains two folders by default, where:
+To build the project, type the following command from the root directory of the project:
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+    $ mvn clean verify
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+To run the program:
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+    $ java --module-path target/starter-1.0.jar:target/dependency -m JFreeStarter
