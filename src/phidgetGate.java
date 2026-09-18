@@ -27,6 +27,7 @@ public class phidgetGate{
     
     public void sort(){
         //todo
+        values.sort(null);
     }
 
     public double getMedianValue(){
