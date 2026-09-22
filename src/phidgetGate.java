@@ -8,6 +8,7 @@ public class phidgetGate{
     public phidgetGate(int phidgetChannelNum){
         ChannelNum=phidgetChannelNum;
         try {
+            voltageRatioInput=new VoltageRatioInput();
             voltageRatioInput.setChannel(phidgetChannelNum);
             voltageRatioInput.open(5000);
         } catch (Exception e) { 
@@ -43,11 +44,13 @@ public class phidgetGate{
         else{
             median= (values.get((len / 2) - 1) + values.get(len / 2)) / 2.0;
         }
-        resetValues();
         return median;
     }
     public void resetValues(){
         values = new ArrayList<>();
+    }
+    public int getChannel(){
+        return ChannelNum;
     }
 
 }
