@@ -13,11 +13,13 @@ public class Canvas extends JFrame {
         setTitle("Sons wind flume interface");
         setSize(800, 800);
         setUpWindowCloser();
-        setVisible(true);
+
         bridgeList=new ArrayList<>();
         bridgeList.add(new phidgetGate(0));
         bridgeList.add(new phidgetGate(2));
         bridgeList.add(new phidgetGate(1));
+        initalizeBridgeInterfaces();
+        setVisible(true);
 
         Timer timer = new Timer(1000, new ActionListener() {
             @Override
@@ -28,6 +30,20 @@ public class Canvas extends JFrame {
         });
         timer.start();
     }
+    
+    public void initalizeBridgeInterfaces(){
+        phidgetInterface panelInterface;
+        for(int i=0;i<bridgeList.size();i++){
+            panelInterface= new phidgetInterface();
+            panelInterface.setSize(getWidth(), (getHeight()/(bridgeList.size()+1))-1);
+            panelInterface.setLocation(0,i*(getHeight()/(bridgeList.size()+1)));
+            panelInterface.setBackground(Color.gray);
+            add(panelInterface);
+            //System.out.println(i*(getHeight()/(bridgeList.size()+1)));
+        }
+
+    }
+
     public void updateBridgeList(){
         if(bridgeList==null){
             return;
@@ -39,6 +55,10 @@ public class Canvas extends JFrame {
     
     public void updateBridgeInterface(phidgetGate bridge){
         System.out.println("interface"+ bridge.getChannel()+" current value: " +bridge.getMedianValue());
+        // for(phidgetInterface e:(phidgetInterface[])getComponents()){
+
+        // }
+        
         bridge.resetValues();
 
     }
