@@ -14,16 +14,24 @@ public class Canvas extends JFrame {
         setSize(800, 800);
         setUpWindowCloser();
         setVisible(true);
+        bridgeList=new ArrayList<>();
+        bridgeList.add(new phidgetGate(0));
+        bridgeList.add(new phidgetGate(2));
+        bridgeList.add(new phidgetGate(1));
+
         Timer timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("update list");
                 updateBridgeList();
-                //todo
             }
         });
         timer.start();
     }
     public void updateBridgeList(){
+        if(bridgeList==null){
+            return;
+        }
         for (phidgetGate bridge : bridgeList) {
             updateBridgeInterface(bridge);
         }
@@ -38,9 +46,19 @@ public class Canvas extends JFrame {
         addWindowListener(new WindowAdapter(){
             @Override 
             public void windowClosing(WindowEvent e){
+                closePhidgetBridges();
                 System.exit(0);
             }
         }  );
+    }
+    public void closePhidgetBridges(){
+        if(bridgeList==null){
+            return;
+        }
+        for (phidgetGate bridge : bridgeList) {
+            bridge.close();
+        }
+
     }
 
 }

@@ -12,20 +12,22 @@ public class phidgetGate{
             voltageRatioInput.setChannel(phidgetChannelNum);
             voltageRatioInput.open(5000);
         } catch (Exception e) { 
+            System.out.println(e);
         }
         
         voltageRatioInput.addVoltageRatioChangeListener((VoltageRatioInputVoltageRatioChangeEvent e) -> {
 			values.add(e.getVoltageRatio());
 		});
-
-        try {
-            System.in.read();
-            voltageRatioInput.close();
-        } catch (Exception e) {
-        }
     }
 
-    
+    public void close(){
+        try {
+        voltageRatioInput.close();
+        }
+        catch(Exception e){
+
+        };
+    }
     public void sort(){
         //todo
         values.sort(null);
