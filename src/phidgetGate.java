@@ -16,6 +16,7 @@ public class phidgetGate{
         }
         
         voltageRatioInput.addVoltageRatioChangeListener((VoltageRatioInputVoltageRatioChangeEvent e) -> {
+            System.out.println(e.getVoltageRatio());
 			values.add(e.getVoltageRatio());
 		});
     }
