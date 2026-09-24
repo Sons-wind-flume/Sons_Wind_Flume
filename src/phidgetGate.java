@@ -8,29 +8,33 @@ public class phidgetGate{
     public phidgetGate(int phidgetChannelNum){
         ChannelNum=phidgetChannelNum;
         try {
+            voltageRatioInput=new VoltageRatioInput();
             voltageRatioInput.setChannel(phidgetChannelNum);
-            voltageRatioInput.open(5000);
+            voltageRatioInput.open(1000);
         } catch (Exception e) { 
+            System.out.println(e);
         }
         
         voltageRatioInput.addVoltageRatioChangeListener((VoltageRatioInputVoltageRatioChangeEvent e) -> {
+            System.out.println(e.getVoltageRatio());
 			values.add(e.getVoltageRatio());
 		});
-
-        try {
-            System.in.read();
-            voltageRatioInput.close();
-        } catch (Exception e) {
-        }
     }
 
-    
+    public void close(){
+        try {
+        voltageRatioInput.close();
+        }
+        catch(Exception e){
+
+        };
+    }
     public void sort(){
         //todo
         values.sort(null);
     }
 
-    public double getMedianValue(){
+    public double getMedianVoltageValue(){
         if (values==null||values.isEmpty()) {
             return 0;
         }
@@ -43,11 +47,15 @@ public class phidgetGate{
         else{
             median= (values.get((len / 2) - 1) + values.get(len / 2)) / 2.0;
         }
-        resetValues();
         return median;
     }
+
     public void resetValues(){
         values = new ArrayList<>();
+    }
+    
+    public int getChannel(){
+        return ChannelNum;
     }
 
 }
