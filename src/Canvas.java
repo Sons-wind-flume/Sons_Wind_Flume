@@ -6,8 +6,7 @@ public class Canvas extends JFrame {
     Color white = new Color(207,207,207);
     static boolean recording= false;
     public interfaceGrid grid;
-    private ArrayList<phidgetGate> bridgeList;
-    private ArrayList<phidgetInterface> interfaceList;
+
     public Canvas(){
         setLayout(null);
         setResizable(false);
@@ -16,15 +15,31 @@ public class Canvas extends JFrame {
         setSize(800, 800);
         setUpWindowCloser();
 
+        ArrayList<phidgetGate> bridgeList;
         bridgeList=new ArrayList<>();
         bridgeList.add(new phidgetGate(0));
         bridgeList.add(new phidgetGate(2));
         bridgeList.add(new phidgetGate(1));
         grid=new interfaceGrid(getWidth(), 600, bridgeList);
+
         //grid.setSize(100,100);
         grid.setLocation(0,0);
         grid.setBackground(Color.gray);
         add(grid);
+        JButton record = new JButton("Record");
+        record.setLocation(600,600);
+        record.setSize(100,100);
+        record.addActionListener(e -> startStopRecording());
+
+        JButton export = new JButton("Export");
+        export.setLocation(0,600);
+        export.setSize(100,100);
+        export.addActionListener(e -> export());
+
+        add(record);
+        add(export);
+
+
         
         setVisible(true);
 
@@ -36,7 +51,21 @@ public class Canvas extends JFrame {
         });
         timer.start();
     }
-    
+
+    public void export(){
+        System.out.println(grid.toString());
+        //Todo
+    }
+    public void startStopRecording(){
+        if(recording){
+            recording=false;
+        }
+        else {
+            recording=true;
+            grid.resetRecord();
+            
+        }
+    }
     
 
     public void setUpWindowCloser(){
@@ -48,14 +77,9 @@ public class Canvas extends JFrame {
             }
         }  );
     }
-    public void closePhidgetBridges(){
-        if(bridgeList==null){
-            return;
-        }
-        for (phidgetGate bridge : bridgeList) {
-            bridge.close();
-        }
 
+    public void closePhidgetBridges(){
+        grid.closeBridges();
     }
 
 }

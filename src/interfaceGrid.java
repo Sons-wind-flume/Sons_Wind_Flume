@@ -3,12 +3,14 @@ import java.util.ArrayList;
 import javax.swing.*;
 public class interfaceGrid extends JPanel {
     ArrayList<phidgetInterface> interfaceList;
+    ArrayList<RecordEntry> recordingList;
 
     public interfaceGrid(int width, int height, ArrayList<phidgetGate> list){
         setLayout(null);
         setSize(width,height);
         interfaceList=new ArrayList<>();
         createInterfaces(list);
+        recordingList=new ArrayList<>();
     }
 
     public void createInterfaces(ArrayList<phidgetGate> list){
@@ -32,14 +34,42 @@ public class interfaceGrid extends JPanel {
         return first.getChannel()-second.getChannel();
 
     }
-
+    public void resetRecord(){
+        recordingList=new ArrayList<>();
+    }
     public void updateinterfaces(){
+        ArrayList<VoltageValue> values= new ArrayList<>();
+
         for(phidgetInterface e : interfaceList){
             if(Canvas.recording){
-                //todo
+                values.add(new VoltageValue(e.getMedianVoltageValue()));
             }
             e.updateText();
-            //e.setSize(200,5);
         }
+
+        if(Canvas.recording){
+            recordingList.add(new RecordEntry(recordingList.size(), values));
+        }
+    }
+    public void closeBridges(){
+        for(phidgetInterface e: interfaceList){
+            e.closeBridge();
+        }
+    }
+    public String toString(){
+        String Text = toStringHeader() +"\n";
+        for(RecordEntry entry:recordingList){
+            Text+= entry.toString()+"\n";
+        }
+        return Text;
+    }
+    public String toStringHeader(){
+        String Text="Time Stamps ,";
+        phidgetInterface curInterface;
+        for(int i=0; i < interfaceList.size() ;i++){
+            curInterface=interfaceList.get(i);
+            Text+=" Channel Voltage["+curInterface.getChannelNum()+"] ,";
+        }
+        return Text;
     }
 }

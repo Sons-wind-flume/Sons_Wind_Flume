@@ -22,9 +22,15 @@ public class phidgetInterface extends JPanel {
         add(curVoltageText);
         
     }
+    public int getChannelNum(){
+        return connectedBridge.getChannel();
+    }
 
     public void updateText(){
         updateVoltage();
+    }
+    public double getMedianVoltageValue(){
+        return connectedBridge.getMedianVoltageValue();
     }
 
     public void updateVoltage(){
@@ -32,6 +38,10 @@ public class phidgetInterface extends JPanel {
         connectedBridge.resetValues();
         curVoltageText.setText("current voltage:"+df.format(curVoltageValue));
         //System.out.println("new voltatage for gate["+connectedBridge.getChannel()+"]: "+ curVoltageValue);
+    }
+
+    public void closeBridge(){
+        connectedBridge.close();
     }
     
 
