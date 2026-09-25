@@ -18,7 +18,7 @@ public class Canvas extends JFrame {
         ArrayList<phidgetGate> bridgeList;
         bridgeList=new ArrayList<>();
         bridgeList.add(new phidgetGate(0));
-        bridgeList.add(new phidgetGate(2));
+        //bridgeList.add(new phidgetGate(2));
         bridgeList.add(new phidgetGate(1));
         grid=new interfaceGrid(getWidth(), 600, bridgeList);
 

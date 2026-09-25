@@ -5,20 +5,20 @@ import javax.swing.border.Border;
 
 public class phidgetInterface extends JPanel {
     public double curVoltageValue=0;
-    DecimalFormat df = new DecimalFormat("#.#####");
+    DecimalFormat df = new DecimalFormat("0.0000");
     public JLabel curVoltageText;
     
     public phidgetGate connectedBridge;
     public phidgetInterface(phidgetGate gate,int height,int width){
-        setLayout(null);
+        //setLayout(null);
         connectedBridge=gate;
         System.out.println(height);
         setSize(width,height);
         Border lineBorder=BorderFactory.createLineBorder(Color.black);
         setBorder(BorderFactory.createTitledBorder(lineBorder,"Bridge " + gate.getChannel() + " Interface"));
         curVoltageText=new JLabel();
-        curVoltageText.setLocation(10,-50);
-        curVoltageText.setSize(100,200);
+        //curVoltageText.setLocation(10,-50);
+        //curVoltageText.setSize(100,200);
         add(curVoltageText);
         
     }
