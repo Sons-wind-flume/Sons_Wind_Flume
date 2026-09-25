@@ -54,6 +54,8 @@ public class Canvas extends JFrame {
 
     public void export(){
         System.out.println(grid.toString());
+        FileWriter writer= new FileWriter();
+        writer.Export(grid.toString());
         //Todo
     }
     public void startStopRecording(){
