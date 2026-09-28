@@ -1,11 +1,15 @@
 import java.text.DecimalFormat;
+
 public class VoltageValue {
-    DecimalFormat df = new DecimalFormat("0.00000");
+
+    DecimalFormat decimalFormat = new DecimalFormat("0.00000");
     public double voltage;
-    public VoltageValue(double vol){
-        voltage=vol;
+
+    public VoltageValue(double voltageValue) {
+        voltage = voltageValue;
     }
-    public String toString(){
-        return (df.format(voltage)+"");
+
+    public String toString() {
+        return decimalFormat.format(voltage);
     }
 }

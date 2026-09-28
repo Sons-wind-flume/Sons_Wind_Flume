@@ -1,0 +1,2 @@
+Water velocity: 1.1453009812998685 m/s
+Test object Cd: 5.194444444444446

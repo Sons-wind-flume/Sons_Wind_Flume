@@ -1,75 +1,129 @@
 import java.awt.Color;
 import java.util.ArrayList;
-import javax.swing.*;
+import javax.swing.JPanel;
+
 public class interfaceGrid extends JPanel {
+
     ArrayList<phidgetInterface> interfaceList;
     ArrayList<RecordEntry> recordingList;
 
-    public interfaceGrid(int width, int height, ArrayList<phidgetGate> list){
+    public interfaceGrid(int width, int height, ArrayList<phidgetGate> list) {
         setLayout(null);
-        setSize(width,height);
-        interfaceList=new ArrayList<>();
+        setSize(width, height);
+
+        interfaceList = new ArrayList<phidgetInterface>();
+        recordingList = new ArrayList<RecordEntry>();
+
+        sortBridgeList(list);
         createInterfaces(list);
-        recordingList=new ArrayList<>();
     }
 
-    public void createInterfaces(ArrayList<phidgetGate> list){
-        phidgetGate curGate;
-        list.sort((u1, u2) -> Integer.compare(u1.getChannel(), u2.getChannel()));
-        for (int i = 0; i < list.size(); i++) {
-            curGate=list.get(i);
-            createInterface(curGate, (getHeight()/(list.size()))-1, i*(getHeight()/list.size()));
-        }
-    }
+    public void sortBridgeList(ArrayList<phidgetGate> list) {
+        int firstIndex;
+        int secondIndex;
+        phidgetGate firstGate;
+        phidgetGate secondGate;
 
-    public void createInterface(phidgetGate gate,int height,int y){
-        phidgetInterface bridgeinterface;
-        bridgeinterface=new phidgetInterface(gate,height,getWidth());
-        bridgeinterface.setLocation(0,y);
-        bridgeinterface.setBackground(new Color(212, 203, 207));
-        add(bridgeinterface);
-        interfaceList.add(bridgeinterface);
-    }
-    public int compare(phidgetGate first, phidgetGate second){
-        return first.getChannel()-second.getChannel();
+        for (firstIndex = 0; firstIndex < list.size(); firstIndex = firstIndex + 1) {
+            for (secondIndex = firstIndex + 1; secondIndex < list.size(); secondIndex = secondIndex + 1) {
+                firstGate = list.get(firstIndex);
+                secondGate = list.get(secondIndex);
 
-    }
-    public void resetRecord(){
-        recordingList=new ArrayList<>();
-    }
-    public void updateinterfaces(){
-        ArrayList<VoltageValue> values= new ArrayList<>();
-
-        for(phidgetInterface e : interfaceList){
-            if(Canvas.recording){
-                values.add(new VoltageValue(e.getMedianVoltageValue()));
+                if (firstGate.getChannel() > secondGate.getChannel()) {
+                    list.set(firstIndex, secondGate);
+                    list.set(secondIndex, firstGate);
+                }
             }
-            e.updateText();
+        }
+    }
+
+    public void createInterfaces(ArrayList<phidgetGate> list) {
+        int index;
+        int height;
+        int yPosition;
+        phidgetGate currentGate;
+
+        for (index = 0; index < list.size(); index = index + 1) {
+            currentGate = list.get(index);
+            height = (getHeight() / list.size()) - 1;
+            yPosition = index * (getHeight() / list.size());
+            createInterface(currentGate, height, yPosition);
+        }
+    }
+
+    public void createInterface(phidgetGate gate, int height, int yPosition) {
+        phidgetInterface bridgeInterface;
+
+        bridgeInterface = new phidgetInterface(gate, height, getWidth());
+        bridgeInterface.setLocation(0, yPosition);
+        bridgeInterface.setBackground(new Color(212, 203, 207));
+
+        add(bridgeInterface);
+        interfaceList.add(bridgeInterface);
+    }
+
+    public void resetRecord() {
+        recordingList = new ArrayList<RecordEntry>();
+    }
+
+    public void updateinterfaces() {
+        ArrayList<VoltageValue> values;
+        int index;
+        phidgetInterface currentInterface;
+
+        values = new ArrayList<VoltageValue>();
+
+        for (index = 0; index < interfaceList.size(); index = index + 1) {
+            currentInterface = interfaceList.get(index);
+            currentInterface.updateText();
+
+            if (Canvas.recording == true) {
+                values.add(new VoltageValue(currentInterface.getCurrentVoltageValue()));
+            }
         }
 
-        if(Canvas.recording){
+        if (Canvas.recording == true) {
             recordingList.add(new RecordEntry(recordingList.size(), values));
         }
     }
-    public void closeBridges(){
-        for(phidgetInterface e: interfaceList){
-            e.closeBridge();
+
+    public void closeBridges() {
+        int index;
+        phidgetInterface currentInterface;
+
+        for (index = 0; index < interfaceList.size(); index = index + 1) {
+            currentInterface = interfaceList.get(index);
+            currentInterface.closeBridge();
         }
     }
-    public String toString(){
-        String Text = toStringHeader() +"\n";
-        for(RecordEntry entry:recordingList){
-            Text+= entry.toString()+"\n";
+
+    public String toString() {
+        String text;
+        int index;
+        RecordEntry entry;
+
+        text = toStringHeader() + "\n";
+
+        for (index = 0; index < recordingList.size(); index = index + 1) {
+            entry = recordingList.get(index);
+            text = text + entry.toString() + "\n";
         }
-        return Text;
+
+        return text;
     }
-    public String toStringHeader(){
-        String Text="Time Stamps ,";
-        phidgetInterface curInterface;
-        for(int i=0; i < interfaceList.size() ;i++){
-            curInterface=interfaceList.get(i);
-            Text+=" Channel Voltage["+curInterface.getChannelNum()+"] ,";
+
+    public String toStringHeader() {
+        String text;
+        int index;
+        phidgetInterface currentInterface;
+
+        text = "Time Stamps ,";
+
+        for (index = 0; index < interfaceList.size(); index = index + 1) {
+            currentInterface = interfaceList.get(index);
+            text = text + " Channel Voltage[" + currentInterface.getChannelNum() + "] ,";
         }
-        return Text;
+
+        return text;
     }
 }

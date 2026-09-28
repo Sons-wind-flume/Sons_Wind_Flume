@@ -1,22 +1,18 @@
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.PrintWriter;
+import java.io.FileNotFoundException;
 
 public class FileWriter {
-    public void Export(String text){
-    Path path = Path.of("recording.csv");
-        String content = text;
+
+    public void export(String text) {
+        PrintWriter writer;
 
         try {
-            // Creates the file (or overwrites it if it exists) and writes text
-            Files.writeString(path, content);
+            writer = new PrintWriter("recording.csv");
+            writer.print(text);
+            writer.close();
             System.out.println("File exported successfully!");
-        } catch (IOException e) {
-            System.err.println("An error occurred: " + e.getMessage());
+        } catch (FileNotFoundException exception) {
+            System.out.println("The CSV file could not be created.");
         }
     }
-
-    
-
 }
