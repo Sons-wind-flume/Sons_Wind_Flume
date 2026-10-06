@@ -4,12 +4,19 @@ import java.io.IOException;
 public class phidgetGate{
     VoltageRatioInput voltageRatioInput;
     ArrayList<Double> values;
+    float slope,offset;
     int ChannelNum;
     public phidgetGate(int phidgetChannelNum){
         ChannelNum=phidgetChannelNum;
+        initalizeGate();
+        slope=0;
+        offset=0;
+    }
+
+    public void initalizeGate(){
         try {
             voltageRatioInput=new VoltageRatioInput();
-            voltageRatioInput.setChannel(phidgetChannelNum);
+            voltageRatioInput.setChannel(ChannelNum);
             voltageRatioInput.open(1000);
         } catch (Exception e) { 
             System.out.println(e);
@@ -58,4 +65,19 @@ public class phidgetGate{
         return ChannelNum;
     }
 
+    public float getOffset(){
+        return offset;
+    }
+
+    public float getSlope(){
+        return slope;
+    }
+
+    public void setOffset(float value){
+        offset=value;
+    }
+
+    public void SetSlope(float value){
+        offset=value;
+    }
 }
