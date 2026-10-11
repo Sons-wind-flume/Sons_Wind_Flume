@@ -1,0 +1,7 @@
+target/
+out/
+dist/
+installer/
+installer-dmg/
+recording.csv
+.DS_Store
