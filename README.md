@@ -1,5 +1,10 @@
-## Getting Started
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+## How to run
+Mac user: mvn clean compile && ./run.sh
+
+Windows:
+mvn clean compile
+java --enable-native-access=ALL-UNNAMED -cp "target/classes;lib/*" org.windflume.Main
+
 
 ## Folder Structure
 
