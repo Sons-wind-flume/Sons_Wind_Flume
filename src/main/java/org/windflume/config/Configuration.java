@@ -21,7 +21,7 @@ public class Configuration {
     public Configuration(){
         TestObject sphere = new TestObject(SPHERE, 0.0022);
         sphere.setReference(true);
-        sphere.setCentroidHeight(0.5);
+        sphere.setKnownDragCoefficient(0.5);  
         testObjects.add(sphere);
         testObjects.add(new TestObject(TEST_OBJECT, 0.003));
     }
