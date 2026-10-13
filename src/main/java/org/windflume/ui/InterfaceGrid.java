@@ -98,14 +98,15 @@ public class InterfaceGrid extends JPanel {
             e.updateText();
 
             if (Canvas.recording) {
-                values.add(new org.windflume.recording.VoltageValue(e.curVoltageValue));
+                values.add(new org.windflume.recording.VoltageValue(e.curVoltageValue,e.getChannelNum(),config,e.getSelectedObject()));
+                //System.out.println(e.getSelectedObject().toString());
             }
         }
 
         if (Canvas.recording) {
 
             recordingList.add(new org.windflume.recording.RecordEntry(
-                    recordingList.size(), values));
+                    recordingList.size(), values,config));
 
             System.out.println("Recorded row: " + recordingList.size());
         }
@@ -142,6 +143,10 @@ public class InterfaceGrid extends JPanel {
         for (int i = 0; i < interfaceList.size(); i++) {
             PhidgetInterface curInterface = interfaceList.get(i);
             text += " Channel Voltage[" + curInterface.getChannelNum() + "] ,";
+        }
+        for (int i = 0; i < interfaceList.size(); i++) {
+            PhidgetInterface curInterface = interfaceList.get(i);
+            text += " Channel force[" + curInterface.getChannelNum() + "] ,";
         }
 
         return text;

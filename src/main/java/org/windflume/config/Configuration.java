@@ -8,7 +8,7 @@ import java.util.Map;
 public class Configuration {
 
     public static final String SPHERE = "Sphere";
-    public static final String TEST_OBJECT = "Test Object";
+    public static  String TEST_OBJECT = "Test Object";
 
     private double waterDensity = 998.0;
 
