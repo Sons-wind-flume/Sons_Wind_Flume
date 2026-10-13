@@ -148,7 +148,7 @@ public class InterfaceGrid extends JPanel {
             PhidgetInterface curInterface = interfaceList.get(i);
             text += " Channel force[" + curInterface.getChannelNum() + "] ,";
         }
-
+        text += " projected area (m2) , attachment area (m2) , centroid height (m), Model force / attachment area (N/m2), Model drag coefficient , Model bending moment (N/m)";
         return text;
     }
 
