@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.Reader;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -24,6 +25,7 @@ import org.windflume.calibration.TrialResult;
 import org.windflume.calibration.TrialStats;
 import org.windflume.calibration.VoltageForceCalibration;
 import org.windflume.config.Configuration;
+import org.windflume.importer.Reader1;
 import org.windflume.phidget.PhidgetGate;
 import org.windflume.recording.CSVFileWriter;
 
@@ -61,22 +63,24 @@ public class Canvas extends JFrame {
         // ---- Bridges ----
         bridgeList = new ArrayList<>();
 
-        try {
-            bridgeList.add(new PhidgetGate(0));
-        } catch (PhidgetException | LinkageError e) {
-            System.out.println("Bridge 0 hardware not connected.");
-            bridgeList.add(new PhidgetGate(0, true));
-        }
+        // try {
+        //     bridgeList.add(new PhidgetGate(0));
+        // } catch (PhidgetException | LinkageError e) {
+        //     System.out.println("Bridge 0 hardware not connected.");
+        //     bridgeList.add(new PhidgetGate(0, true));
+        // }
 
-        try {
-            bridgeList.add(new PhidgetGate(1));
-        } catch (PhidgetException | LinkageError e) {
-            System.out.println("Bridge 1 hardware not connected.");
-            bridgeList.add(new PhidgetGate(1, true));
-        }
+        // try {
+        //     bridgeList.add(new PhidgetGate(1));
+        // } catch (PhidgetException | LinkageError e) {
+        //     System.out.println("Bridge 1 hardware not connected.");
+        //     bridgeList.add(new PhidgetGate(1, true));
+        // }
 
         // ---- Centre: the two gauge cards ----
-        Configuration config = Configuration.defaults();
+        //Configuration config = Configuration.defaults();
+        Configuration config = Reader1.getConfiguration();
+        bridgeList= config.getActiveGates();
         grid = new InterfaceGrid(970, 560, bridgeList, config);
         mainPanel.add(grid, BorderLayout.CENTER);
 

@@ -3,7 +3,7 @@ package org.windflume.config;
 public class TestObject {
 
     private final String name;
-    private final double projectedArea;
+    private double projectedArea;
     private double attachmentArea;
     private double centroidHeight;
     private double knownDragCoefficient = 0;
@@ -25,6 +25,7 @@ public class TestObject {
     public String getOrientation()     { return orientation; }
     public double getKnownDragCoefficient() { return knownDragCoefficient; }
 
+    public void setprojectedArea(double area)  { projectedArea = area; }
     public void setAttachmentArea(double area)  { attachmentArea = area; }
     public void setCentroidHeight(double h)     { centroidHeight = h; }
     public void setReference(boolean value)     { reference = value; }

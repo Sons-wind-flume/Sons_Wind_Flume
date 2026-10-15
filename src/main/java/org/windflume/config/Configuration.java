@@ -5,14 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Configuration {
+import org.windflume.phidget.PhidgetGate;
 
+public class Configuration {
     public static final String SPHERE = "Sphere";
     public static  String TEST_OBJECT = "Test Object";
 
     private double waterDensity = 998.0;
 
     private final List<TestObject> testObjects = new ArrayList<>();
+     //private final List<PhidgetGate> activeGates = new ArrayList<>();
+    private final Map<Integer, PhidgetGate> activeGates = new HashMap<>();
     private final Map<Integer, Double> slopes = new HashMap<>();
     private final Map<Integer, Double> offsets = new HashMap<>();
 
@@ -25,6 +28,13 @@ public class Configuration {
         testObjects.add(sphere);
         testObjects.add(new TestObject(TEST_OBJECT, 0.003));
     }
+    public Configuration(boolean deleteIfYouWantAnError){
+        TestObject sphere = new TestObject(SPHERE, 0);
+        sphere.setReference(true); 
+        sphere.setKnownDragCoefficient(0);
+        testObjects.add(sphere);
+        testObjects.add(new TestObject(TEST_OBJECT, 0.003));
+    }
 
     public static Configuration defaults() {
         Configuration c = new Configuration();
@@ -33,6 +43,27 @@ public class Configuration {
         c.usingDefaults = true;
         return c;
     }
+
+    public void addGate(PhidgetGate gate){
+        activeGates.put(gate.getChannel(),gate);
+        setChannelCalibration(gate.getChannel(), 0, 0);
+    }
+
+    public boolean isActiveGate(int channel){
+        return activeGates.get(channel) !=null;
+    }
+    public int activeGateCount(){
+        return activeGates.size();
+    }
+
+    public ArrayList<PhidgetGate> getActiveGates() {
+        return new ArrayList<PhidgetGate>(activeGates.values());
+    }
+
+    public PhidgetGate getActiveGate(int channel) {
+        return activeGates.get(channel);
+    }
+
 
     public void addTestObject(TestObject obj) {
         for ( int i=0; i < testObjects.size(); i++){

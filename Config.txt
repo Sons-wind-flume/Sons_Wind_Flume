@@ -1,0 +1,11 @@
+active_gates 1,0
+
+gate 1 slope/offset 0.1111,-4.3
+gate 0 slope/offset 0.2222,-5.2
+
+water_density 998
+
+sphere projected_area 0.2
+sphere attachment_area 0.3
+sphere centroid_height 0.4
+sphere drag_coefficient 5.2
