@@ -100,6 +100,7 @@ public class InterfaceGrid extends JPanel {
             if (Canvas.recording) {
                 values.add(new org.windflume.recording.VoltageValue(e.curVoltageValue,e.getChannelNum(),config,e.getSelectedObject()));
                 //System.out.println(e.getSelectedObject().toString());
+                //System.out.println(e.getSelectedObject().isReference());
             }
         }
 
@@ -128,9 +129,9 @@ public class InterfaceGrid extends JPanel {
     public String toString() {
 
         String text = toStringHeader() + "\n";
-
-        for (org.windflume.recording.RecordEntry entry : recordingList) {
-            text += entry.toString() + "\n";
+        for (int i = 0; i < recordingList.size(); i++) {
+            org.windflume.recording.RecordEntry entry = recordingList.get(i);
+            text += entry.toString(i+1) + "\n";
         }
 
         return text;
@@ -142,13 +143,27 @@ public class InterfaceGrid extends JPanel {
 
         for (int i = 0; i < interfaceList.size(); i++) {
             PhidgetInterface curInterface = interfaceList.get(i);
-            text += " Channel Voltage[" + curInterface.getChannelNum() + "] ,";
+            text += " Channel Voltage[" + curInterface.getChannelNum() + "]";
+            if(curInterface.getSelectedObject().isReference()){
+                text +="(sphere)";
+            }
+            else{
+                text+="(test object)";
+            }
+            text += " ,";
         }
         for (int i = 0; i < interfaceList.size(); i++) {
             PhidgetInterface curInterface = interfaceList.get(i);
-            text += " Channel force[" + curInterface.getChannelNum() + "] ,";
+            text += " Channel force[" + curInterface.getChannelNum() + "]";
+            if(curInterface.getSelectedObject().isReference()){
+                text +="(sphere)";
+            }
+            else{
+                text+="(test object)";
+            }
+            text += " ,";
         }
-        text += " projected area (m2) , attachment area (m2) , centroid height (m), Model force / attachment area (N/m2), Model drag coefficient , Model bending moment (N/m)";
+        text += " projected area (m2) , attachment area (m2) , centroid height (m), Model force / attachment area (N/m2),Water Velocity (m/s), Model drag coefficient , Model bending moment (N/m)";
         return text;
     }
 

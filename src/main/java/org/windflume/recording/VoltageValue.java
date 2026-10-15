@@ -17,12 +17,19 @@ public class VoltageValue {
         this.channelNum=channelNum;
         config=conf;
         voltage = vol;
+        obj=object;
     }
-    public double calculateForce(){
-        return voltage*config.getSlope(channelNum)+config.getOffset(channelNum);
+    public String toStringForce(){
+        return "="+voltage+"*"+config.getSlope(channelNum)+"+"+config.getOffset(channelNum);
     }
     public double getVoltage(){
         return voltage;
+    }
+    public TestObject getObject(){
+        return  obj;
+    }
+    public String toStringObj(){
+        return  obj.toStringExport();
     }
     @Override
     public String toString() {
