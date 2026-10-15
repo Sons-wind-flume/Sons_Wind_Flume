@@ -7,15 +7,15 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.DoublePredicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 public final class ConfigLoader {
 
     public static final String PATH_PROPERTY = "windflume.config";
 
-    private static final Pattern PAIR =
+    private static final Pattern SETTING =
             Pattern.compile("\"([^\"]+)\"\\s*:\\s*(?:\"([^\"]*)\"|([^\\s,}]+))");
 
     public static final class Result {
@@ -33,6 +33,7 @@ public final class ConfigLoader {
     private ConfigLoader() {
     }
 
+    // Finding and reading the file
     public static Path defaultPath() {
         String override = System.getProperty(PATH_PROPERTY);
         if (override != null && !override.isBlank()) {
@@ -48,11 +49,12 @@ public final class ConfigLoader {
     public static Result load(Path path) {
         List<String> warnings = new ArrayList<>();
         String json;
+
         try {
             if (Files.exists(path)) {
                 json = Files.readString(path);
             } else {
-                json = defaultJson();
+                json = defaultJson(); // first run: create the file with default values
                 Files.createDirectories(path.toAbsolutePath().getParent());
                 Files.writeString(path, json);
             }
@@ -60,75 +62,123 @@ public final class ConfigLoader {
             warnings.add("Could not read or create the config file. Built-in default values are being used.");
             return new Result(Configuration.defaults(), warnings, path);
         }
+
         return new Result(fromJson(json, warnings), warnings, path);
     }
 
+    // Turning the file text into a Configuration
+
     public static Configuration fromJson(String json, List<String> warnings) {
-        Configuration c = Configuration.defaults();
+        Configuration config = Configuration.defaults();
+
         if (!json.trim().startsWith("{")) {
             warnings.add("The config file must start with '{'. Built-in default values are being used.");
-            return c;
+            return config;
         }
 
-        Map<String, String> m = new LinkedHashMap<>();
-        Matcher match = PAIR.matcher(json);
-        while (match.find()) {
-            m.put(match.group(1), match.group(2) != null ? match.group(2) : match.group(3));
+        Map<String, String> settings = findSettings(json);
+
+        config.setWaterDensity(
+                number(settings, "waterDensity", config.getWaterDensity(), Rule.POSITIVE, warnings));
+
+        for (int channel = 0; channel < 4; channel++) {
+            double slope = number(settings, "slope" + channel, config.getSlope(channel), Rule.NOT_ZERO, warnings);
+            double offset = number(settings, "offset" + channel, config.getOffset(channel), Rule.ANY, warnings);
+            config.setChannelCalibration(channel, slope, offset);
         }
 
-        c.setWaterDensity(num(m, "waterDensity", c.getWaterDensity(), v -> v > 0, "greater than 0", warnings));
+        // The sphere's drag coefficient must be known
+        config.addTestObject(readObject(settings, "sphere", Configuration.SPHERE,
+                config, Rule.POSITIVE, warnings));
+        config.addTestObject(readObject(settings, "testObject", Configuration.TEST_OBJECT,
+                config, Rule.ZERO_OR_MORE, warnings));
 
-        for (int ch = 0; ch < 4; ch++) {
-            c.setChannelCalibration(ch,
-                    num(m, "slope" + ch, c.getSlope(ch), v -> v != 0, "anything except 0", warnings),
-                    num(m, "offset" + ch, c.getOffset(ch), v -> true, "a number", warnings));
+        // Anything still in the map was not recognised
+        for (String name : settings.keySet()) {
+            warnings.add("Unknown setting \"" + name + "\" was ignored.");
         }
-
-        c.addTestObject(object(m, "sphere", Configuration.SPHERE, c, v -> v > 0, "greater than 0", warnings));
-        // for the test object, a drag coefficient of 0 means "unknown"
-        c.addTestObject(object(m, "testObject", Configuration.TEST_OBJECT, c, v -> v >= 0, "0 or more", warnings));
-
-        for (String unknown : m.keySet()) {
-            warnings.add("Unknown setting \"" + unknown + "\" was ignored.");
-        }
-        return c;
+        return config;
     }
 
-    private static TestObject object(Map<String, String> m, String prefix, String name, Configuration c,
-                                     DoublePredicate cdRule, String cdText, List<String> warnings) {
-        TestObject old = c.getTestObject(name);
-        TestObject obj = new TestObject(name,
-                num(m, prefix + "ProjectedArea", old.getProjectedArea(), v -> v > 0, "greater than 0", warnings));
-        obj.setAttachmentArea(
-                num(m, prefix + "AttachmentArea", old.getAttachmentArea(), v -> v >= 0, "0 or more", warnings));
-        obj.setKnownDragCoefficient(
-                num(m, prefix + "DragCoefficient", old.getKnownDragCoefficient(), cdRule, cdText, warnings));
-        obj.setModelId(m.getOrDefault(prefix + "ModelId", old.getModelId()).trim());
-        obj.setOrientation(m.getOrDefault(prefix + "Orientation", old.getOrientation()).trim());
-        m.remove(prefix + "ModelId");
-        m.remove(prefix + "Orientation");
-        return obj;
+  
+    private static Map<String, String> findSettings(String json) {
+        Map<String, String> settings = new LinkedHashMap<>();
+        Matcher matcher = SETTING.matcher(json);
+        while (matcher.find()) {
+            String quotedText = matcher.group(2);
+            String bareValue = matcher.group(3);
+            settings.put(matcher.group(1), quotedText != null ? quotedText : bareValue);
+        }
+        return settings;
     }
 
-    private static double num(Map<String, String> m, String key, double def,
-                              DoublePredicate rule, String ruleText, List<String> warnings) {
-        String text = m.remove(key);
+    private static TestObject readObject(Map<String, String> settings, String prefix, String name,
+                                         Configuration config, Rule dragRule, List<String> warnings) {
+        TestObject current = config.getTestObject(name); 
+
+        TestObject object = new TestObject(name,
+                number(settings, prefix + "ProjectedArea", current.getProjectedArea(), Rule.POSITIVE, warnings));
+        object.setAttachmentArea(
+                number(settings, prefix + "AttachmentArea", current.getAttachmentArea(), Rule.ZERO_OR_MORE, warnings));
+        object.setKnownDragCoefficient(
+                number(settings, prefix + "DragCoefficient", current.getKnownDragCoefficient(), dragRule, warnings));
+        object.setModelId(text(settings, prefix + "ModelId", current.getModelId()));
+        object.setOrientation(text(settings, prefix + "Orientation", current.getOrientation()));
+        return object;
+    }
+
+    // Checking values
+
+    private enum Rule {
+        ANY("a number"),
+        POSITIVE("greater than 0"),
+        ZERO_OR_MORE("0 or more"),
+        NOT_ZERO("anything except 0");
+
+        final String description;
+
+        Rule(String description) {
+            this.description = description;
+        }
+
+        boolean allows(double value) {
+            return switch (this) {
+                case ANY -> true;
+                case POSITIVE -> value > 0;
+                case ZERO_OR_MORE -> value >= 0;
+                case NOT_ZERO -> value != 0;
+            };
+        }
+    }
+
+    // Reads a number. If it is missing, the default is used. If it is invalid, the default is used and a warning added. 
+    private static double number(Map<String, String> settings, String name, double defaultValue,
+                                 Rule rule, List<String> warnings) {
+        String text = settings.remove(name);
         if (text == null) {
-            return def;
+            return defaultValue;
         }
+
         try {
-            double v = Double.parseDouble(text.trim());
-            if (!Double.isNaN(v) && !Double.isInfinite(v) && rule.test(v)) {
-                return v;
+            double value = Double.parseDouble(text.trim());
+            if (!Double.isNaN(value) && !Double.isInfinite(value) && rule.allows(value)) {
+                return value;
             }
-            warnings.add("\"" + key + "\" must be " + ruleText + ". Using " + def + ".");
+            warnings.add("\"" + name + "\" must be " + rule.description + ". Using " + defaultValue + ".");
         } catch (NumberFormatException e) {
-            warnings.add("\"" + key + "\" must be a number. Using " + def + ".");
+            warnings.add("\"" + name + "\" must be a number. Using " + defaultValue + ".");
         }
-        return def;
+        return defaultValue;
     }
 
-    /** The text written to a new config file. */
+    // Reads text. If it is missing, the default is used. 
+    private static String text(Map<String, String> settings, String name, String defaultValue) {
+        String text = settings.remove(name);
+        return (text == null) ? defaultValue : text.trim();
+    }
+
+    // The default file
+
     public static String defaultJson() {
         return """
             {

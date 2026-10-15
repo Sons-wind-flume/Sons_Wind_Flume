@@ -79,10 +79,7 @@ public class Canvas extends JFrame {
         // ---- Centre: the two gauge cards ----
         ConfigLoader.Result loaded = ConfigLoader.load();
         Configuration config = loaded.config;
-        if (!loaded.warnings.isEmpty()) {
-            showConfigWarnings(loaded);
-        }
-
+        SettingsMenu.setUp(this, loaded); // Settings menu + warning popup
         grid = new InterfaceGrid(970, 560, bridgeList, config);
         mainPanel.add(grid, BorderLayout.CENTER);
 
@@ -195,22 +192,6 @@ public class Canvas extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
     }
-    
-    //Config warning
-    private void showConfigWarnings(ConfigLoader.Result loaded) {
-    StringBuilder message = new StringBuilder(
-            "Some settings in the config file could not be used, so defaults were used instead:\n\n");
-    for (String warning : loaded.warnings) {
-        message.append("- ").append(warning).append("\n");
-        System.out.println("Config warning: " + warning);
-    }
-    message.append("\nConfig file: ").append(loaded.path);
-
-    javax.swing.SwingUtilities.invokeLater(() ->
-            JOptionPane.showMessageDialog(this, message.toString(),
-                    "Configuration warning", JOptionPane.WARNING_MESSAGE));
-}
-
 
     // Export
 
