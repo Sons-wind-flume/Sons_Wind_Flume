@@ -36,7 +36,7 @@ public class TestObject {
     public String toString() { return name; }
     public String toStringExport(){
         String text="";
-        text+=""+getProjectedArea()+","+getAttachmentArea()+","+ getCentroidHeight();
+        text+=""+getProjectedArea()+",="+getAttachmentArea()+",="+ getCentroidHeight()+",="+getKnownDragCoefficient();
         return text;
     }
 }

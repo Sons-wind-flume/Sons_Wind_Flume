@@ -131,15 +131,17 @@ public class InterfaceGrid extends JPanel {
         String text = toStringHeader() + "\n";
         for (int i = 0; i < recordingList.size(); i++) {
             org.windflume.recording.RecordEntry entry = recordingList.get(i);
-            text += entry.toString(i+1) + "\n";
+            text += entry.toString(i+3) + "\n";
         }
 
         return text;
     }
 
     public String toStringHeader() {
-
-        String text = "Time Stamps ,";
+        //config;
+        String text ="Water Density,="+config.getWaterDensity();
+        
+        text += "\nTime Stamps ,";
 
         for (int i = 0; i < interfaceList.size(); i++) {
             PhidgetInterface curInterface = interfaceList.get(i);
@@ -163,7 +165,7 @@ public class InterfaceGrid extends JPanel {
             }
             text += " ,";
         }
-        text += " projected area (m2) , attachment area (m2) , centroid height (m), Model force / attachment area (N/m2),Water Velocity (m/s), Model drag coefficient , Model bending moment (N/m)";
+        text += " projected area (m2) , attachment area (m2) , centroid height (m), Sphere drag coefficient, Water Velocity (m/s) ,Model force / attachment area (N/m2) , Model drag coefficient , Model bending moment (N/m)";
         return text;
     }
 

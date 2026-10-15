@@ -19,8 +19,8 @@ public class VoltageValue {
         voltage = vol;
         obj=object;
     }
-    public String toStringForce(){
-        return "="+voltage+"*"+config.getSlope(channelNum)+"+"+config.getOffset(channelNum);
+    public String toStringForce(char collum, int row){
+        return ""+collum+""+row+"*"+config.getSlope(channelNum)+"+"+config.getOffset(channelNum);
     }
     public double getVoltage(){
         return voltage;
