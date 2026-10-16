@@ -60,7 +60,7 @@ public class DashboardDialog extends JDialog {
         maxVelocity.setText(fmt(velocityMax, "%.3f m/s"));
         minVelocity.setText(fmt(velocityMin, "%.3f m/s"));
         duration.setText(durationSeconds + " s");
-        medianCd.setText(fmt(cdMedian, "%.3f m/s"));
+        medianCd.setText(fmt(cdMedian, "%.3f"));
 
         maxForce.setText(Double.isNaN(forceMax) ? "--" : String.format("%.2f N", forceMax));
 

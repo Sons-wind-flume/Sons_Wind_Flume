@@ -154,10 +154,13 @@ public class Canvas extends JFrame {
 
                     if (recording) {
                         stats.add(result);
+                        System.out.println("median=" + stats.getMedianCd());
                     }
 
-                    updateDashboard(sphere, stats.getMaxSphereForce(), Double.NaN);
-                    updateDashboard(testObj, stats.getMaxTestObjectForce(), stats.getMedianCd());
+
+                    double liveV = result.getWaterVelocity();
+                    updateDashboard(sphere, liveV, stats.getMaxSphereForce(), Double.NaN);
+                    updateDashboard(testObj, liveV, stats.getMaxTestObjectForce(), stats.getMedianCd());
 
                     double waterVelocity = result.getWaterVelocity();
                     double dragCoefficient = result.getTestObjectDragCoefficient();
@@ -191,6 +194,14 @@ public class Canvas extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    public void updateDashboard (PhidgetInterface gauge, double liveV, double maxForce, double cd){
+        DashboardDialog d = gauge.getDashboard();
+        if ( d != null && d.isVisible()){
+            d.update(liveV, stats.getMaxVelocity(), stats.getMinVelocity(),
+            stats.getDurationSeconds(), cd, maxForce);
+        }
     }
 
     // Export
@@ -231,6 +242,9 @@ public class Canvas extends JFrame {
     private void toggleTrial() {
         if (!recording) {
             // START
+            for (PhidgetInterface g : new PhidgetInterface[]{ grid.getReferenceGauge(), grid.getOtherGauge(grid.getReferenceGauge()) }) {
+                if (g != null && g.getDashboard() != null) g.getDashboard().clearChart();
+}
             grid.clearCharts();
             exportButton.setVisible(false);
             startStopRecording();
@@ -262,17 +276,4 @@ public class Canvas extends JFrame {
         });
     }
 
-    private void updateDashboard(PhidgetInterface gauge, double maxForce, double cd) {
-        DashboardDialog d = gauge.getDashboard();
-        if (d != null && d.isVisible()) {
-            d.update(
-                    stats.getCurrentVelocity(),
-                    stats.getMaxVelocity(),
-                    stats.getMinVelocity(),
-                    stats.getDurationSeconds(),
-                    cd,
-                    maxForce
-            );
-        }
-    }
 }
