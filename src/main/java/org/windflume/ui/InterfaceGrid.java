@@ -98,14 +98,16 @@ public class InterfaceGrid extends JPanel {
             e.updateText();
 
             if (Canvas.recording) {
-                values.add(new org.windflume.recording.VoltageValue(e.curVoltageValue));
+                values.add(new org.windflume.recording.VoltageValue(e.curVoltageValue,e.getChannelNum(),config,e.getSelectedObject()));
+                //System.out.println(e.getSelectedObject().toString());
+                //System.out.println(e.getSelectedObject().isReference());
             }
         }
 
         if (Canvas.recording) {
 
             recordingList.add(new org.windflume.recording.RecordEntry(
-                    recordingList.size(), values));
+                    recordingList.size(), values,config));
 
             System.out.println("Recorded row: " + recordingList.size());
         }
@@ -127,23 +129,43 @@ public class InterfaceGrid extends JPanel {
     public String toString() {
 
         String text = toStringHeader() + "\n";
-
-        for (org.windflume.recording.RecordEntry entry : recordingList) {
-            text += entry.toString() + "\n";
+        for (int i = 0; i < recordingList.size(); i++) {
+            org.windflume.recording.RecordEntry entry = recordingList.get(i);
+            text += entry.toString(i+3) + "\n";
         }
 
         return text;
     }
 
     public String toStringHeader() {
-
-        String text = "Time Stamps ,";
+        //config;
+        String text ="Water Density,="+config.getWaterDensity();
+        
+        text += "\nTime Stamps ,";
 
         for (int i = 0; i < interfaceList.size(); i++) {
             PhidgetInterface curInterface = interfaceList.get(i);
-            text += " Channel Voltage[" + curInterface.getChannelNum() + "] ,";
+            text += " Channel Voltage[" + curInterface.getChannelNum() + "]";
+            if(curInterface.getSelectedObject().isReference()){
+                text +="(sphere)";
+            }
+            else{
+                text+="(test object)";
+            }
+            text += " ,";
         }
-
+        for (int i = 0; i < interfaceList.size(); i++) {
+            PhidgetInterface curInterface = interfaceList.get(i);
+            text += " Channel force[" + curInterface.getChannelNum() + "]";
+            if(curInterface.getSelectedObject().isReference()){
+                text +="(sphere)";
+            }
+            else{
+                text+="(test object)";
+            }
+            text += " ,";
+        }
+        text += " projected area (m2) , attachment area (m2) , centroid height (m), Sphere drag coefficient, Water Velocity (m/s) ,Model force / attachment area (N/m2) , Model drag coefficient , Model bending moment (N/m)";
         return text;
     }
 
