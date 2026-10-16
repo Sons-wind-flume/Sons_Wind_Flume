@@ -23,12 +23,10 @@ import org.windflume.calibration.CalibrationController;
 import org.windflume.calibration.TrialResult;
 import org.windflume.calibration.TrialStats;
 import org.windflume.calibration.VoltageForceCalibration;
-import org.windflume.config.ConfigLoader;
 import org.windflume.config.Configuration;
+import org.windflume.importer.Reader1;
 import org.windflume.phidget.PhidgetGate;
 import org.windflume.recording.CSVFileWriter;
-
-import com.phidget22.PhidgetException;
 
 public class Canvas extends JFrame {
 
@@ -61,25 +59,10 @@ public class Canvas extends JFrame {
 
         // ---- Bridges ----
         bridgeList = new ArrayList<>();
-
-        try {
-            bridgeList.add(new PhidgetGate(0));
-        } catch (PhidgetException | LinkageError e) {
-            System.out.println("Bridge 0 hardware not connected.");
-            bridgeList.add(new PhidgetGate(0, true));
-        }
-
-        try {
-            bridgeList.add(new PhidgetGate(1));
-        } catch (PhidgetException | LinkageError e) {
-            System.out.println("Bridge 1 hardware not connected.");
-            bridgeList.add(new PhidgetGate(1, true));
-        }
-
         // ---- Centre: the two gauge cards ----
-        ConfigLoader.Result loaded = ConfigLoader.load();
-        Configuration config = loaded.config;
-        SettingsMenu.setUp(this, loaded); // Settings menu + warning popup
+        Configuration config = Reader1.getConfiguration();
+        bridgeList = config.getActiveGates();
+
         grid = new InterfaceGrid(970, 560, bridgeList, config);
         mainPanel.add(grid, BorderLayout.CENTER);
 
