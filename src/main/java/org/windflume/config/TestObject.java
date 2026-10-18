@@ -35,9 +35,25 @@ public class TestObject {
 
     @Override
     public String toString() { return name; }
-    public String toStringExport(){
+    public String toStringProjectedArea(){
         String text="";
-        text+=""+getProjectedArea()+",="+getAttachmentArea()+",="+ getCentroidHeight()+",="+getKnownDragCoefficient();
+        text+=""+getProjectedArea();
         return text;
     }
+    public String toStringAttachmentArea(){
+        String text="";
+        text+=""+getAttachmentArea();
+        return text;
+    }
+    public String toStringCentroidHeight(){
+        String text="";
+        text+=""+ getCentroidHeight();
+        return text;
+    }
+    public String toStringDragCoefficient(){
+        String text="";
+        text+="="+getKnownDragCoefficient();
+        return text;
+    }
+    
 }
