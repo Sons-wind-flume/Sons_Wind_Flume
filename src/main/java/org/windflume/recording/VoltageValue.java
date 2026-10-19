@@ -28,9 +28,6 @@ public class VoltageValue {
     public TestObject getObject(){
         return  obj;
     }
-    public String toStringObj(){
-        return  obj.toStringExport();
-    }
     @Override
     public String toString() {
 
