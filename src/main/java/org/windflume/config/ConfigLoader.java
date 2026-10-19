@@ -10,6 +10,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.windflume.phidget.PhidgetGate;
+
+import com.phidget22.PhidgetException;
+
 
 public final class ConfigLoader {
 
@@ -60,7 +64,7 @@ public final class ConfigLoader {
             }
         } catch (IOException e) {
             warnings.add("Could not read or create the config file. Built-in default values are being used.");
-            return new Result(Configuration.defaults(), warnings, path);
+            return new Result(defaultsWithGates(), warnings, path);
         }
 
         return new Result(fromJson(json, warnings), warnings, path);
@@ -69,22 +73,27 @@ public final class ConfigLoader {
     // Turning the file text into a Configuration
 
     public static Configuration fromJson(String json, List<String> warnings) {
-        Configuration config = Configuration.defaults();
 
-        if (!json.trim().startsWith("{")) {
+        if (!json.trim().startsWith("{")){
             warnings.add("The config file must start with '{'. Built-in default values are being used.");
-            return config;
+            return defaultsWithGates();
         }
-
+        
+        Configuration config = Configuration.defaults();
+        Configuration defaults = Configuration.defaults();
         Map<String, String> settings = findSettings(json);
 
+        for (int channel : activeGates(settings, warnings)){
+            config.addGate(newGate(channel));
+        }
+
         config.setWaterDensity(
-                number(settings, "waterDensity", config.getWaterDensity(), Rule.POSITIVE, warnings));
+                number(settings, "waterDensity", defaults.getWaterDensity(), Rule.POSITIVE, warnings));
 
         for (int channel = 0; channel < 4; channel++) {
-            double slope = number(settings, "slope" + channel, config.getSlope(channel), Rule.NOT_ZERO, warnings);
-            double offset = number(settings, "offset" + channel, config.getOffset(channel), Rule.ANY, warnings);
-            config.setChannelCalibration(channel, slope, offset);
+            double slope = number(settings, "slope" + channel, defaults.getSlope(channel), Rule.NOT_ZERO, warnings);
+            double offset = number(settings, "offset" + channel, defaults.getOffset(channel), Rule.ANY, warnings);
+            config.setChannelCalibration(channel, defaults.getSlope(channel), defaults.getOffset(channel));
         }
 
         // The sphere's drag coefficient must be known
@@ -96,6 +105,18 @@ public final class ConfigLoader {
         // Anything still in the map was not recognised
         for (String name : settings.keySet()) {
             warnings.add("Unknown setting \"" + name + "\" was ignored.");
+        }
+        return config;
+    }
+
+
+    //fallback config that still has both gates
+    private static Configuration defaultsWithGates(){
+        Configuration config = Configuration.defaults();
+        Configuration defaults = Configuration.defaults();
+        for (int channel : new int[] {0, 1}){
+            config.addGate(newGate(channel));
+            config.setChannelCalibration(channel, defaults.getSlope(channel), defaults.getOffset(channel));
         }
         return config;
     }
@@ -112,6 +133,44 @@ public final class ConfigLoader {
         return settings;
     }
 
+    //hardware fallback
+    private static PhidgetGate newGate(int channel){
+        try {
+            return new PhidgetGate(channel);
+        } catch (PhidgetException | LinkageError e) {
+            return new PhidgetGate(channel, true);
+        }
+    }
+
+    //"activeGates": "0,1"
+    private static List<Integer> activeGates(Map<String, String> settings, List<String> warnings){
+        List<Integer> channels = new ArrayList<>();
+        String text = settings.remove("activeGates");
+        if (text == null){
+            text = "0,1";
+        }
+        for (String part : text.split(",")){
+            try {
+                int channel = Integer.parseInt(part.trim());
+                if (channel < 0 || channel > 3){
+                    throw new NumberFormatException();
+                }
+                if (!channels.contains(channel)){
+                    channels.add(channel);
+                }
+                
+            } catch (NumberFormatException e) {
+                warnings.add("\"activeGates\" must list channel numbers 0 to 3, like \"0,1\". Ignored \"" + part.trim() + "\".");
+            }
+        }
+        if (channels.isEmpty()){
+            channels.add(0);
+            channels.add(1);
+        }
+        return channels;
+    }
+
+
     private static TestObject readObject(Map<String, String> settings, String prefix, String name,
                                          Configuration config, Rule dragRule, List<String> warnings) {
         TestObject current = config.getTestObject(name); 
@@ -120,6 +179,7 @@ public final class ConfigLoader {
                 number(settings, prefix + "ProjectedArea", current.getProjectedArea(), Rule.POSITIVE, warnings));
         object.setAttachmentArea(
                 number(settings, prefix + "AttachmentArea", current.getAttachmentArea(), Rule.ZERO_OR_MORE, warnings));
+        object.setCentroidHeight(number(settings, prefix + "CentroidHeight", current.getCentroidHeight(), Rule.ZERO_OR_MORE, warnings));
         object.setKnownDragCoefficient(
                 number(settings, prefix + "DragCoefficient", current.getKnownDragCoefficient(), dragRule, warnings));
         object.setModelId(text(settings, prefix + "ModelId", current.getModelId()));
@@ -183,6 +243,10 @@ public final class ConfigLoader {
         return """
             {
               "waterDensity": 998.0,
+
+              "activeGates": "0,1",
+              "sphereCentroidHeight": 0.0,
+              "testObjectCentroidHeight": 0.0,
 
               "slope0": 49160.0,
               "offset0": -4.2,
