@@ -25,10 +25,11 @@ public class RecordEntry {
 
         String text = "=";
         int index=0;
-        char ProjectedArea,AttachmentArea, CentroidHeight,dragCoefficient, sphereForce,modelForce,waterVelocity;
+        char sphereProjectedArea,testObjectProjectedArea,testObjectAttachmentArea, testObjectCentroidHeight,sphereDragCoefficient, sphereForce,modelForce,waterVelocity;
         sphereForce='Z';
         modelForce='Z';
         text += timestamp + " ,=";
+        TestObject testObject=null;
         TestObject sphere=null;;
         for (int i = 0; i < recordedValues.size(); i++) {
             index++;
@@ -51,35 +52,52 @@ public class RecordEntry {
             }
             else{
                 modelForce=(char)('A'+index);
+                testObject=curValue.getObject();
             }
             
             text += " ,=";
         }
-        if(sphere!= null){
-            text +=sphere.toStringExport()+",=";
+        
+         if(testObject!= null){
+            text +=testObject.toStringProjectedArea()+",=";
+            text +=testObject.toStringAttachmentArea()+",=";
+            text +=testObject.toStringCentroidHeight()+",";
         } else{
-            text+="0,0,0,";
+            text+="=0,=0,=0,";
         }
+        if(sphere!= null){
+            text +=sphere.toStringAttachmentArea()+",";
+            text +=sphere.toStringDragCoefficient()+",";
+        } else{
+            text+="=0,=0,";
+        }
+        
+       
 
         index++;
-        ProjectedArea=(char)('A'+index);
+        testObjectProjectedArea=(char)('A'+index);
         index++;
-        AttachmentArea=(char)('A'+index);
+        testObjectAttachmentArea=(char)('A'+index);
         index++;
-        CentroidHeight=(char)('A'+index);
+        testObjectCentroidHeight=(char)('A'+index);
         index++;
-        dragCoefficient=(char)('A'+index);
+        
+        sphereProjectedArea=(char)('A'+index);
+        index++;
+        sphereDragCoefficient=(char)('A'+index);
+        index++;
+        //dragCoefficient=(char)('A'+index);
        
-        index++;
+        //index++;
         waterVelocity=(char)('A'+index);
          //Water Velocity (m/s)
-        text+="sqrt("+ sphereForce+height+"/("+ProjectedArea+height+"*B1*"+dragCoefficient+height+"*(1/2))),=";
+        text+="=sqrt("+ sphereForce+height+"/("+sphereProjectedArea+height+"*B1*"+sphereDragCoefficient+height+"*(1/2))),=";
         //Model force / attachment area (N/m2)
-        text+=modelForce +""+ height+"/(pi()*("+AttachmentArea+height+")),=";
+        text+=modelForce +""+ height+"/(pi()*("+testObjectAttachmentArea+height+")),=";
         //Model drag coefficient
-        text+=modelForce +""+height+"/((1/2)*B1*("+waterVelocity+height+"^2)*"+ProjectedArea+height+"),=";
+        text+=modelForce +""+height+"/((1/2)*B1*("+waterVelocity+height+"^2)*"+testObjectProjectedArea+height+"),=";
         //model bending moment
-        text+=modelForce+""+height+"*"+CentroidHeight+""+height;
+        text+=modelForce+""+height+"*"+testObjectCentroidHeight+""+height;
 
         return text;
     }
