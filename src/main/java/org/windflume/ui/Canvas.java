@@ -200,10 +200,10 @@ public class Canvas extends JFrame {
         boolean saved = writer.Export(data);
 
         if (saved){
-            JOptionPane.showMessageDialog(this, "Your data was saved to recording.csv", "Export complete", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Your data was saved to:\n" + writer.getExportPath(), "Export complete", JOptionPane.INFORMATION_MESSAGE);
         } else {
              JOptionPane.showMessageDialog(this,
-                "Could not save recording.csv.\nIf the file is open in another program, close it and try again.", "Export failed", 
+                "Could not save: \n" +  writer.getExportPath() + "\nIf the file is open in another program, close it and try again.", "Export failed", 
                 JOptionPane.ERROR_MESSAGE);
         }
     }
