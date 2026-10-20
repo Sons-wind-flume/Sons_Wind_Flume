@@ -93,7 +93,7 @@ public final class ConfigLoader {
         for (int channel = 0; channel < 4; channel++) {
             double slope = number(settings, "slope" + channel, defaults.getSlope(channel), Rule.NOT_ZERO, warnings);
             double offset = number(settings, "offset" + channel, defaults.getOffset(channel), Rule.ANY, warnings);
-            config.setChannelCalibration(channel, defaults.getSlope(channel), defaults.getOffset(channel));
+            config.setChannelCalibration(channel, slope, offset);
         }
 
         // The sphere's drag coefficient must be known
