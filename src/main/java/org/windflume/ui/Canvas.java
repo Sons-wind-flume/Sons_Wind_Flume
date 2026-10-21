@@ -137,7 +137,6 @@ public class Canvas extends JFrame {
 
                     if (recording) {
                         stats.add(result);
-                        System.out.println("median=" + stats.getMedianCd());
                     }
 
 
@@ -215,7 +214,6 @@ public class Canvas extends JFrame {
 
         if (recording) {
             recording = false;
-            System.out.println("Recording stopped");
         } else {
             recording = true;
             System.out.println("Recording started");
