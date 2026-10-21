@@ -43,7 +43,6 @@ public class PhidgetInterface extends JPanel {
     private TestObject lastObject;
     private Consumer<TestObject> onCustomCreated;
 
-    // Read-only config fields (as in the SRS prototype)
     private final JTextField attachmentField = readOnlyField();
     private final JTextField modelField = readOnlyField();
     private final JTextField projectedField = readOnlyField();

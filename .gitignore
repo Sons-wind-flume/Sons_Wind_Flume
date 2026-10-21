@@ -9,3 +9,4 @@ bin/
 target/
 recording.csv
 .DS_Store
+dist/
