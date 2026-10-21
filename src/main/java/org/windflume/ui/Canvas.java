@@ -216,7 +216,6 @@ public class Canvas extends JFrame {
             recording = false;
         } else {
             recording = true;
-            System.out.println("Recording started");
             grid.resetRecord();
         }
     }

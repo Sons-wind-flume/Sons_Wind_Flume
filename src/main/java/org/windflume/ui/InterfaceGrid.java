@@ -107,7 +107,6 @@ public class InterfaceGrid extends JPanel {
             recordingList.add(new org.windflume.recording.RecordEntry(
                     recordingList.size(), values,config));
 
-            System.out.println("Recorded row: " + recordingList.size());
         }
     }
 
