@@ -21,7 +21,7 @@ public class InterfaceGrid extends JPanel {
 
         this.config = config;
 
-        setLayout(new GridLayout(0, 1, 0, 12));     // gauge cards stacked, as in the prototype
+        setLayout(new GridLayout(0, 1, 0, 12));    
         setSize(width, height);
         setPreferredSize(new Dimension(width, height));
         setOpaque(false);
@@ -99,8 +99,6 @@ public class InterfaceGrid extends JPanel {
 
             if (Canvas.recording) {
                 values.add(new org.windflume.recording.VoltageValue(e.curVoltageValue,e.getChannelNum(),config,e.getSelectedObject()));
-                //System.out.println(e.getSelectedObject().toString());
-                //System.out.println(e.getSelectedObject().isReference());
             }
         }
 
@@ -109,7 +107,6 @@ public class InterfaceGrid extends JPanel {
             recordingList.add(new org.windflume.recording.RecordEntry(
                     recordingList.size(), values,config));
 
-            System.out.println("Recorded row: " + recordingList.size());
         }
     }
 
@@ -138,7 +135,6 @@ public class InterfaceGrid extends JPanel {
     }
 
     public String toStringHeader() {
-        //config;
         String text ="Water Density,="+config.getWaterDensity();
         
         text += "\nTime Stamps ,";
@@ -167,7 +163,7 @@ public class InterfaceGrid extends JPanel {
             }
             text += " ,";
         }
-        //text += "Test Object projected area (m2) ,Test Object attachment area (m2) ,Test Object centroid height (m)";
+
         text+=tempString;
         text += ",Sphere projected area (m2), Sphere drag coefficient, Water Velocity (m/s) ,Model force / attachment area (N/m2) , Model drag coefficient , Model bending moment (N/m)";
         return text;

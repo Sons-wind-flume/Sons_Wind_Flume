@@ -1,15 +1,10 @@
 package org.windflume.importer;
 
-import org.windflume.config.Configuration;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
+
+import org.windflume.config.Configuration;
 
 public class Reader1 {
     public static Configuration config = null;

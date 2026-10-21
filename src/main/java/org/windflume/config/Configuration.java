@@ -28,13 +28,6 @@ public class Configuration {
         testObjects.add(sphere);
         testObjects.add(new TestObject(TEST_OBJECT, 0.003));
     }
-    public Configuration(boolean deleteIfYouWantAnError){
-        TestObject sphere = new TestObject(SPHERE, 0);
-        sphere.setReference(true); 
-        sphere.setKnownDragCoefficient(0);
-        testObjects.add(sphere);
-        testObjects.add(new TestObject(TEST_OBJECT, 0.003));
-    }
 
     public static Configuration defaults() {
         Configuration c = new Configuration();

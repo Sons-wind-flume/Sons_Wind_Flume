@@ -1,16 +1,13 @@
 package org.windflume.recording;
+import java.util.ArrayList;
+
 import org.windflume.config.Configuration;
 import org.windflume.config.TestObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class RecordEntry {
 
     private final int timestamp;
     private final ArrayList<VoltageValue> recordedValues;
-    //private final Map<Integer, VoltageValue> recordedValues = new HashMap<>();
 
     public RecordEntry(
             int time,
