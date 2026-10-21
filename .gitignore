@@ -5,3 +5,7 @@ installer/
 installer-dmg/
 recording.csv
 .DS_Store
+bin/
+target/
+recording.csv
+.DS_Store
