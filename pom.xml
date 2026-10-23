@@ -14,6 +14,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>project-local</id>
+            <url>file:${project.basedir}/repo</url>
+        </repository>
+    </repositories>
+
     <dependencies>
 
         <!-- JFreeChart -->
@@ -38,13 +45,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Local Phidget library -->
+        <!-- Phidget library (served from the project-local repo in ./repo so it gets bundled) -->
         <dependency>
             <groupId>com.phidget22</groupId>
             <artifactId>phidget22</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/phidget22.jar</systemPath>
         </dependency>
 
     </dependencies>
@@ -57,7 +62,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.0</version>
-                                <configuration>
+                <configuration>
                     <release>${maven.compiler.release}</release>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
@@ -81,6 +86,29 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+
+            <!-- Shade plugin: builds one self-contained jar (JFreeChart + Phidget bundled) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>false</shadedArtifactAttached>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.windflume.Main</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
