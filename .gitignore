@@ -10,3 +10,4 @@ target/
 recording.csv
 .DS_Store
 dist/
+dependency-reduced-pom.xml

@@ -63,7 +63,7 @@ public class RecordEntry {
             text+="=0,=0,=0,";
         }
         if(sphere!= null){
-            text +=sphere.toStringAttachmentArea()+",";
+            text +=sphere.toStringProjectedArea()+",";
             text +=sphere.toStringDragCoefficient()+",";
         } else{
             text+="=0,=0,";
